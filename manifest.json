@@ -1,0 +1,9 @@
+{
+    "name": "College Canteen",
+    "short_name": "Canteen",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#F5F5DC",
+    "theme_color": "#6f4e37",
+    "orientation": "portrait-primary"
+  }

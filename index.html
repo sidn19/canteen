@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Canteen Menu</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="manifest" href="./manifest.json">
+        <link rel="stylesheet" href="./css/styles.css">
+        <meta name="theme-color" content="#6f4e37">
+    </head>
+    <body>
+        <div class="menu blurable">
+            <div>
+                <button id="ordersButton" class="logged-in-content" style="display: none;">Your Orders</button>
+            </div>
+            <div style="margin-left: auto;">
+                <button id="loginButton2" class="logged-out-content">Log In</button>
+            </div>
+            <div>
+                <button id="logoutButton" class="logged-in-content" style="display: none;">Log Out</button>
+            </div>
+        </div>
+        <h1 class="blurable">Canteen Menu</h1>
+        <div class="card blurable" id="menuCard" style="max-width: 728px; margin: auto; margin-bottom: 5rem;"></div>
+        <div class="card fixed-card blurable" id="shortMenuCard">
+            <div class="category-name">
+                Menu
+            </div>
+        </div>
+        <div class="footer blurable">
+            <div>
+                &#8377;<span class="total-cost">0</span> | <span class="total-items">0</span> items
+            </div>
+            <div>
+                <button class="large-button" id="viewCartButton" disabled>View Cart</button>
+            </div>
+        </div>
+        <div class="modal" id="cartModal">
+            <div class="card">
+                <div style="position: relative;">
+                    <div class="title">Cart</div>
+                    <span class="close-button" title="Close">&times;</span>
+                </div>
+                <table id="cartItems" style="width: 100%;"></table>
+                <div style="margin-top: 1rem">
+                    <div style="text-align: center;">Your total is &#8377;<span class="total-cost">0</span> for <span class="total-items">0</span> items</div>
+                </div>
+                <div style="text-align: center; margin-top: 1rem; margin-bottom: 0.6rem;">
+                    <button class="large-button logged-out-content" id="loginButton">Login to Proceed</button>
+                    <button class="large-button logged-in-content" id="confirmOrderButton" style="display: none;">Confirm Order</button>
+                </div>
+                <div style="text-align: center; margin: 0.3rem auto;">
+                    You currently have &#8377;<span id="balance"></span> in your account
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://apis.google.com/js/platform.js"></script>
+        <script src="./js/main.js"></script>
+    </body>
+</html>
