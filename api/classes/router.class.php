@@ -3,9 +3,7 @@
 class Router {
     private array $resources = [
         'GET' => [],
-        'POST' => [],
-        'DELETE' => [],
-        'PUT' => []
+        'POST' => []
     ];
 
     public function get(string $url, callable $handler): void {
@@ -16,22 +14,25 @@ class Router {
         $this->resources['POST'][] = ['url' => $url, 'handler' => $handler];
     }
 
-    public function put(string $url, callable $handler): void {
-        $this->resources['PUT'][] = ['url' => $url, 'handler' => $handler];
-    }
-
-    public function delete(string $url, callable $handler): void {
-        $this->resources['DELETE'][] = ['url' => $url, 'handler' => $handler];
+    private static function decodeResource(string $rawUrl): string {
+        return str_replace('api/', '', str_replace('index.php', '', parse_url($rawUrl, PHP_URL_PATH)));
     }
 
     public function run(string $type, string $url): void {
-        $resourceIndex = array_search($url, array_column($this->resources[$type], 'url'));
+        $resource = self::decodeResource($url);
+
+        $resourceIndex = array_search($resource, array_column($this->resources[$type], 'url'));
 
         if ($resourceIndex !== false) {
-            $this->resources[$type][$resourceIndex]['handler']();
+            $response = $this->resources[$type][$resourceIndex]['handler']($type === 'GET' ? $_GET : $_POST);
+            
+            http_response_code(200);
+            header('Content-Type: application/json');
+            echo json_encode($response);
         }
         else {
-            echo 'Invalid Resource!';
+            http_response_code(400);
+            die('Invalid Resource!');
         }
     }
 }
