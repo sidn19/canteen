@@ -45,7 +45,45 @@ $router->get('/', function($params) {
 });
 
 $router->get('/menu', function ($params) use ($db) {
-    return $db->query('SELECT * FROM items')->fetchAll(PDO::FETCH_ASSOC);
+    $dataset = $db->query('
+    SELECT ig.id AS itemGroupId, ig.name AS itemGroupName, ig.position AS itemGroupPosition,
+        i.id, i.name, i.image, i.price, i.position, r.rating
+        FROM items i
+        INNER JOIN itemgroups ig
+            ON i.groupId = ig.id
+        INNER JOIN (
+            SELECT i.id, ROUND(IFNULL(AVG(r.score), 0), 1) AS rating
+                FROM items i
+                LEFT JOIN ratings r
+                    ON i.id = r.itemId
+                GROUP BY i.id
+        ) r
+            ON i.id = r.id
+    ')->fetchAll(PDO::FETCH_ASSOC);
+
+    // process data
+    $itemGroups = [];
+    foreach($dataset as $item) {
+        $index = array_search($item['itemGroupId'], array_column($itemGroups, 'id'));
+        $tempItem = $item;
+        unset($item['itemGroupId']);
+        unset($item['itemGroupName']);
+        unset($item['itemGroupPosition']);
+        
+        if ($index !== false) {
+            $itemGroups[$index]['items'][] = $item;
+        }
+        else {
+            $itemGroups[] = [
+                'id' => $tempItem['itemGroupId'],
+                'name' => $tempItem['itemGroupName'],
+                'position' => $tempItem['itemGroupPosition'],
+                'items' => [$item]
+            ];
+        }
+    }
+
+    return $itemGroups;
 });
 
 $router->get('/orders', function ($params) {
@@ -56,19 +94,33 @@ $router->post('/orders', function ($params) {
     return null;
 });
 
-$router->get('/users', function ($params) {
-    require_once __DIR__.'/vendor/autoload.php';
-    $client = new Google_Client(['client_id' => '570178535400-0ljjrn2urq7el0maauibd1qjq0482n76.apps.googleusercontent.com']);
-    $payload = $client->verifyIdToken($params['token']);
-    
-    if ($payload) {
-        return $payload;
+$router->get('/users', function ($params) use ($db) {
+    // check if user exists in database and get balance
+    $PDOStatement = $db->prepare('
+        SELECT IFNULL(SUM(t.amount), 0) AS balance
+            FROM users u
+            LEFT JOIN transactions t
+                ON u.id = t.userId
+            WHERE u.email = :email
+            GROUP BY u.id
+    ');
+    $PDOStatement->bindValue(':email', $params['user']['email'], PDO::PARAM_STR);
+    $PDOStatement->execute();
+
+    if ($PDOStatement->rowCount() > 0) {
+        return $PDOStatement->fetch(PDO::FETCH_ASSOC);
     }
     else {
-        http_response_code(400);
-        die('Invalid token!');
+        // insert record
+        $PDOStatement = $db->prepare('
+            INSERT INTO users (name, email)
+                VALUES (:name, :email)
+        ');
+        $PDOStatement->bindValue(':name', $params['user']['family_name'], PDO::PARAM_STR);
+        $PDOStatement->bindValue(':email', $params['user']['email'], PDO::PARAM_STR);
+        $PDOStatement->execute();
+        return ['balance' => 0];
     }
-    return $params;
 });
 
 $router->post('/feedback', function ($params) {

@@ -1,162 +1,10 @@
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/canteen/serviceWorker.js');
+        navigator.serviceWorker.register(`${location.pathname}serviceWorker.js`);
     });
 }
 
 const apiUrl = '/api';
-
-const itemGroups = [
-    {
-        id: 1,
-        name: 'Sandwiches',
-        position: 1,
-        items: [
-            {
-                id: 1,
-                name: 'Butter and Cheese Sandwich',
-                image: './images/butter-cheese.jpg',
-                price: 30,
-                position: 1,
-                rating: 3
-            },
-            {
-                id: 2,
-                name: 'Jam Sandwich',
-                image: './images/jam.jpg',
-                price: 20,
-                position: 2,
-                rating: 1
-            },
-            {
-                id: 3,
-                name: 'Vegetable Sandwich',
-                image: './images/Vegetable-Sandwich.jpg',
-                price: 30,
-                position: 3,
-                rating: 3
-            },
-            {
-                id: 4,
-                name: 'Vegetable and Cheese Sandwich',
-                image: './images/veg-cheese.jpg',
-                price: 40,
-                position: 4,
-                rating: 4
-            },
-            {
-                id: 5,
-                name: 'Grilled Veg. Sandwich',
-                image: './images/grilled-veg.jpg',
-                price: 50,
-                position: 5,
-                rating: 2
-            },
-            {
-                id: 6,
-                name: 'Egg Sandwich',
-                image: './images/egg.jpg',
-                price: 40,
-                position: 6,
-                rating: 5
-            }
-        ]
-    },
-    {
-        id: 2,
-        name: 'Breakfast',
-        position: 2,
-        items: [
-            {
-                id: 7,
-                name: 'Upma',
-                image: './images/Rava-Upma.jpg',
-                price: 30,
-                position: 1,
-                rating: 1
-            },
-            {
-                id: 8,
-                name: 'Poha',
-                image: './images/Poha-Recipe.jpg',
-                price: 20,
-                position: 2,
-                rating: 3
-            },
-            {
-                id: 9,
-                name: 'Misal Pav',
-                image: './images/misal-pav.jpg',
-                price: 30,
-                position: 3,
-                rating: 4
-            },
-            {
-                id: 10,
-                name: 'Idli',
-                image: './images/idli.jpg',
-                price: 30,
-                position: 4,
-                rating: 3
-            },
-            {
-                id: 11,
-                name: 'Medu Vada',
-                image: './images/medu-vada.jpg',
-                price: 30,
-                position: 5,
-                rating: 2
-            }
-        ]
-    },
-    {
-        id: 3,
-        name: 'Lunch',
-        position: 3,
-        items: [
-            {
-                id: 12,
-                name: 'Veg. Fried Rice',
-                image: './images/veg-fried-rice-recipe-1.jpg',
-                price: 60,
-                position: 1,
-                rating: 4
-            },
-            {
-                id: 13,
-                name: 'Chi. Fried Rice',
-                image: './images/chickenfriedrice-10.jpg',
-                price: 80,
-                position: 2,
-                rating: 5
-            },
-            {
-                id: 14,
-                name: 'Veg. Noodles',
-                image: './images/veg-noodles-recipe-1.jpg',
-                price: 65,
-                position: 3,
-                rating: 2
-            },
-            {
-                id: 15,
-                name: 'Chi. Noodles',
-                image: './images/SCHEZWAN-CHICKEN-NOODLES.jpg',
-                price: 90,
-                position: 4,
-                rating: 3
-            },
-            {
-                id: 16,
-                name: 'Chapati Bhaji',
-                image: './images/chapati.jpg',
-                price: 40,
-                position: 5,
-                rating: 5
-            }
-        ]
-    }
-];
 
 let orders = [
     {
@@ -178,7 +26,7 @@ let orders = [
     }
 ];
 
-let balance = 100;
+let balance = 0;
 
 let googleUser = null;
 gapi.load('auth2', () => {
@@ -196,7 +44,8 @@ gapi.load('auth2', () => {
             fetch(`${apiUrl}/users?token=${googleUser.getAuthResponse().id_token}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
+                    balance = data.balance;
+                    $('#balance').text(balance);
                     $('.logged-in-content').show();
                     $('.logged-out-content').hide();
                 })
@@ -216,49 +65,52 @@ gapi.load('auth2', () => {
 $(document).ready(() => {
     let cart = [];
 
-    itemGroups.forEach((itemGroup, index) => {
-        $('#menuCard').append(
-            `<div class="category-name" id="${itemGroup.name}">
-                ${itemGroup.name}
-            </div>`
-        );
-
-        itemGroup.items.forEach(item => {
-            $('#menuCard').append(
-                `<div class="flex-container">
-                    <div class="inner-flex-container">
-                        <img src="${item.image}">
-                        <div class="category-item">
-                            <div>${item.name}</div>
-                            <div class="inner-flex-container category-info-block">
-                                <div>&#8377;${item.price}</div>
-                                <div class="rating">[${item.rating}&starf;]</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <button title="Add to Cart" class="add-to-cart" data-item-id="${item.id}" data-item-group-id="${itemGroup.id}">
-                            Add
-                        </button>
-                    </div>
-                </div>`
-            );
-        });
-
-        if (index !== itemGroups.length - 1) {
-            $('#menuCard').append(
-                `<hr>`
-            );
-        }
+    fetch(`${apiUrl}/menu`)
+        .then(response => response.json())
+        .then(itemGroups => {
+            $('.loader').hide();
+            itemGroups.forEach((itemGroup, index) => {
+                $('#menuCard').append(
+                    `<div class="category-name" id="${itemGroup.name}">
+                        ${itemGroup.name}
+                    </div>`
+                );
         
-        $('#shortMenuCard').append(
-            `<div>
-                <a href="#${itemGroup.name}">${itemGroup.name}</a>
-            </div>`
-        );
-    });
-
-    $('#balance').text(balance);
+                itemGroup.items.forEach(item => {
+                    $('#menuCard').append(
+                        `<div class="flex-container">
+                            <div class="inner-flex-container">
+                                <img src="${apiUrl + item.image}">
+                                <div class="category-item">
+                                    <div>${item.name}</div>
+                                    <div class="inner-flex-container category-info-block">
+                                        <div>&#8377;${item.price}</div>
+                                        <div class="rating">[${item.rating}&starf;]</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <button title="Add to Cart" class="add-to-cart" data-item-id="${item.id}" data-item-group-id="${itemGroup.id}">
+                                    Add
+                                </button>
+                            </div>
+                        </div>`
+                    );
+                });
+        
+                if (index !== itemGroups.length - 1) {
+                    $('#menuCard').append(
+                        `<hr>`
+                    );
+                }
+                
+                $('#shortMenuCard').append(
+                    `<div>
+                        <a href="#${itemGroup.name}">${itemGroup.name}</a>
+                    </div>`
+                );
+            });
+        });
 
     $('#menuCard').on('click', 'button.add-to-cart', event => {
         const itemId = parseInt($(event.target).attr('data-item-id'));
