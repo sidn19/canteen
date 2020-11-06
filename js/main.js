@@ -4,6 +4,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+const apiUrl = '/api';
 
 const itemGroups = [
     {
@@ -192,8 +193,16 @@ gapi.load('auth2', () => {
     auth2.currentUser.listen(user => {
         if (user && user.isSignedIn()) {
             googleUser = user;
-            $('.logged-in-content').show();
-            $('.logged-out-content').hide();
+            fetch(`${apiUrl}/users?token=${googleUser.getAuthResponse().id_token}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    $('.logged-in-content').show();
+                    $('.logged-out-content').hide();
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         }
         else {
             googleUser = null;
