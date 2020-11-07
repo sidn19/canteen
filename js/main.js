@@ -64,12 +64,14 @@ gapi.load('auth2', () => {
 
 $(document).ready(() => {
     let cart = [];
+    let itemGroups = [];
 
     fetch(`${apiUrl}/menu`)
         .then(response => response.json())
-        .then(itemGroups => {
+        .then(items => {
             $('.loader').hide();
             $('.loader-container').hide();
+            itemGroups = items;
             itemGroups.forEach((itemGroup, index) => {
                 $('#menuCard').append(
                     `<div class="category-name" id="${itemGroup.name}">
@@ -141,6 +143,9 @@ $(document).ready(() => {
         if (totalCost > balance) {
             $('#confirmOrderButton').attr('disabled', true);
         }
+        else {
+            $('#confirmOrderButton').attr('disabled', false);
+        }
     });
 
     $('#viewCartButton').click(() => {
@@ -183,5 +188,26 @@ $(document).ready(() => {
     $('#logoutButton').click(() => {
         const auth2 = gapi.auth2.getAuthInstance();
         auth2.signOut();
+    });
+
+    $('#confirmOrderButton').click(() => {
+        fetch(`${apiUrl}/orders`, {
+            method: 'POST',
+            body: new URLSearchParams({
+                cart: JSON.stringify(cart.map(x => x.id)),
+                token: googleUser.getAuthResponse().id_token
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                balance = data.balance;
+                cart = [];
+                $('#cartItems').children().remove();
+                $('.total-cost').text('0');
+                $('.total-items').text('0');
+                $('#balance').text(balance);
+                $('.blurable').css('filter', 'none');
+                $('#cartModal').css('display', 'none');
+            });
     });
 });
