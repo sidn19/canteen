@@ -69,6 +69,7 @@ $(document).ready(() => {
         .then(response => response.json())
         .then(itemGroups => {
             $('.loader').hide();
+            $('.loader-container').hide();
             itemGroups.forEach((itemGroup, index) => {
                 $('#menuCard').append(
                     `<div class="category-name" id="${itemGroup.name}">
