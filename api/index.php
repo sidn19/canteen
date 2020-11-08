@@ -87,7 +87,16 @@ $router->get('/menu', function ($params) use ($db) {
 });
 
 $router->get('/orders', function ($params) {
-    return null;
+    // get user id
+    $PDOStatement = $db->prepare('
+        SELECT id
+            FROM users
+            WHERE email = :email
+    ');
+    $PDOStatement->bindValue(':email', $params['user']['email'], PDO::PARAM_STR);
+    $PDOStatement->execute();
+    $userId = $PDOStatement->fetchColumn();
+    
 });
 
 $router->post('/orders', function ($params) use ($db) {
