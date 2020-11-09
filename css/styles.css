@@ -109,6 +109,12 @@ button:disabled {
     cursor: default;
 }
 
+button.small-button {
+    padding: 0.15rem 0.3rem;
+    font-size: 0.8rem;
+    margin: 0rem;
+}
+
 button.large-button {
     padding: 0.6rem 1rem;
     font-size: 1.2rem;
@@ -207,7 +213,16 @@ a {
     transform: translateX(-100%);
     background: linear-gradient(90deg, transparent, #fff, transparent); 
     animation: loading 1s infinite; 
-} 
+}
+
+#back-arrow {
+    font-weight: bold;
+    font-size: 2rem;
+    cursor: pointer;
+    position: absolute;
+    top: -1.35rem;
+    left: -0.3rem;
+}
 
 @keyframes loading { 
     100% { 

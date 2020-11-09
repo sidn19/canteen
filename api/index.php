@@ -86,7 +86,7 @@ $router->get('/menu', function ($params) use ($db) {
     return $itemGroups;
 });
 
-$router->get('/orders', function ($params) {
+$router->get('/orders', function ($params) use ($db) {
     // get user id
     $PDOStatement = $db->prepare('
         SELECT id
@@ -96,7 +96,33 @@ $router->get('/orders', function ($params) {
     $PDOStatement->bindValue(':email', $params['user']['email'], PDO::PARAM_STR);
     $PDOStatement->execute();
     $userId = $PDOStatement->fetchColumn();
-    
+    // get orders
+    $PDOStatement = $db->prepare('
+        SELECT o.id, o.status, ABS(t.amount) AS amount, o.createdAt
+            FROM orders o
+            INNER JOIN transactions t
+                ON o.transactionId = t.id AND o.userId = t.userId
+            WHERE o.userId = :userId
+            ORDER BY o.createdAt DESC
+    ');
+    $PDOStatement->bindValue(':userId', $userId, PDO::PARAM_INT);
+    $PDOStatement->execute();
+    $orders = $PDOStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    $PDOStatement = $db->prepare('
+        SELECT i.name, oi.itemId
+            FROM orderitems oi
+            INNER JOIN items i
+                ON oi.itemId = i.id
+            WHERE oi.orderId = :orderId
+    ');
+    foreach ($orders as &$order) {
+        $PDOStatement->bindValue(':orderId', $order['id'], PDO::PARAM_INT);
+        $PDOStatement->execute();
+        $order['items'] = $PDOStatement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    return $orders;
 });
 
 $router->post('/orders', function ($params) use ($db) {
@@ -232,8 +258,44 @@ $router->get('/users', function ($params) use ($db) {
     }
 });
 
-$router->post('/feedback', function ($params) {
-    return null;
+$router->post('/feedback', function ($params) use ($db) {
+    // get user id
+    $PDOStatement = $db->prepare('
+        SELECT id
+            FROM users
+            WHERE email = :email
+    ');
+    $PDOStatement->bindValue(':email', $params['user']['email'], PDO::PARAM_STR);
+    $PDOStatement->execute();
+    $userId = $PDOStatement->fetchColumn();
+
+    // insert feedback
+    $reviews = json_decode($params['reviews']);
+    $PDOStatement = $db->prepare('
+        INSERT INTO ratings (userId, itemId, score, review)
+            VALUES (:userId, :itemId, :score1, :review1)
+            ON DUPLICATE KEY UPDATE score = :score2, review = :review2
+    ');
+    $PDOStatement->bindValue(':userId', $userId, PDO::PARAM_INT);
+
+    foreach($reviews as $review) {
+        $PDOStatement->bindValue(':itemId', $review['itemId'], PDO::PARAM_INT);
+        $PDOStatement->bindValue(':score1', $review['score'], PDO::PARAM_INT);
+        $PDOStatement->bindValue(':score2', $review['score'], PDO::PARAM_INT);
+        $PDOStatement->bindValue(':review1', $review['review'], PDO::PARAM_STR);
+        $PDOStatement->bindValue(':review2', $review['review'], PDO::PARAM_STR);
+        $PDOStatement->execute();
+    }
+
+    $PDOStatement = $db->prepare('
+        INSERT INTO userlogs (text, userId)
+            VALUES (:text, :userId)
+    ');
+    $PDOStatement->bindValue(':userId', $userId, PDO::PARAM_INT);
+    $PDOStatement->bindValue(':text', 'Posted feedback for '.count($reviews).' items', PDO::PARAM_STR);
+    $PDOStatement->execute();
+
+    return true;
 });
 
 // run resource
