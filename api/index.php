@@ -110,7 +110,7 @@ $router->get('/orders', function ($params) use ($db) {
     $orders = $PDOStatement->fetchAll(PDO::FETCH_ASSOC);
 
     $PDOStatement = $db->prepare('
-        SELECT i.name
+        SELECT i.name, oi.itemId
             FROM orderitems oi
             INNER JOIN items i
                 ON oi.itemId = i.id
@@ -119,7 +119,7 @@ $router->get('/orders', function ($params) use ($db) {
     foreach ($orders as &$order) {
         $PDOStatement->bindValue(':orderId', $order['id'], PDO::PARAM_INT);
         $PDOStatement->execute();
-        $order['items'] = $PDOStatement->fetchAll(PDO::FETCH_COLUMN);
+        $order['items'] = $PDOStatement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     return $orders;
@@ -258,8 +258,44 @@ $router->get('/users', function ($params) use ($db) {
     }
 });
 
-$router->post('/feedback', function ($params) {
-    return null;
+$router->post('/feedback', function ($params) use ($db) {
+    // get user id
+    $PDOStatement = $db->prepare('
+        SELECT id
+            FROM users
+            WHERE email = :email
+    ');
+    $PDOStatement->bindValue(':email', $params['user']['email'], PDO::PARAM_STR);
+    $PDOStatement->execute();
+    $userId = $PDOStatement->fetchColumn();
+
+    // insert feedback
+    $reviews = json_decode($params['reviews']);
+    $PDOStatement = $db->prepare('
+        INSERT INTO ratings (userId, itemId, score, review)
+            VALUES (:userId, :itemId, :score1, :review1)
+            ON DUPLICATE KEY UPDATE score = :score2, review = :review2
+    ');
+    $PDOStatement->bindValue(':userId', $userId, PDO::PARAM_INT);
+
+    foreach($reviews as $review) {
+        $PDOStatement->bindValue(':itemId', $review['itemId'], PDO::PARAM_INT);
+        $PDOStatement->bindValue(':score1', $review['score'], PDO::PARAM_INT);
+        $PDOStatement->bindValue(':score2', $review['score'], PDO::PARAM_INT);
+        $PDOStatement->bindValue(':review1', $review['review'], PDO::PARAM_STR);
+        $PDOStatement->bindValue(':review2', $review['review'], PDO::PARAM_STR);
+        $PDOStatement->execute();
+    }
+
+    $PDOStatement = $db->prepare('
+        INSERT INTO userlogs (text, userId)
+            VALUES (:text, :userId)
+    ');
+    $PDOStatement->bindValue(':userId', $userId, PDO::PARAM_INT);
+    $PDOStatement->bindValue(':text', 'Posted feedback for '.count($reviews).' items', PDO::PARAM_STR);
+    $PDOStatement->execute();
+
+    return true;
 });
 
 // run resource

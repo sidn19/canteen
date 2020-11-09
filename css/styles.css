@@ -213,7 +213,16 @@ a {
     transform: translateX(-100%);
     background: linear-gradient(90deg, transparent, #fff, transparent); 
     animation: loading 1s infinite; 
-} 
+}
+
+#back-arrow {
+    font-weight: bold;
+    font-size: 2rem;
+    cursor: pointer;
+    position: absolute;
+    top: -1.35rem;
+    left: -0.3rem;
+}
 
 @keyframes loading { 
     100% { 

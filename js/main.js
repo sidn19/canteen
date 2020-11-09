@@ -134,7 +134,7 @@ $(document).ready(() => {
     });
 
     $('.modal, .close-button').click(event => {
-        if (event.target.id === 'cartModal' || event.target.id === 'ordersModal' || $(event.target).hasClass('close-button')) {
+        if (event.target.id === 'cartModal' || event.target.id === 'ordersModal' || event.target.id === 'feedbackModal' || $(event.target).hasClass('close-button')) {
             $('.blurable').css('filter', 'none');
             $('.modal').css('display', 'none');
             $('#ordersContent').html('');
@@ -193,8 +193,9 @@ $(document).ready(() => {
             });
     });
 
-    $('#ordersButton').click(() => {        
+    $('#ordersButton, #back-arrow').click(() => {        
         $('.orders-loader').show();
+        $('#feedbackModal').css('display', 'none');
         $('#ordersModal').css('display', 'flex');
 
         fetch(`${apiUrl}/orders?token=${googleUser.getAuthResponse().id_token}`)
@@ -220,11 +221,11 @@ $(document).ready(() => {
                                 </div>
                                 <div style="font-size: 0.9rem; display: flex; flex-direction: row;">
                                     <div>Items:</div>
-                                    <div style="padding-left: 0.3rem">${order.items.join(', ')}</div>
+                                    <div style="padding-left: 0.3rem">${order.items.map(x => x.name).join(', ')}</div>
                                 </div>
                                 <div style="font-size: 0.9rem; display: flex; flex-direction: row; justify-content: space-between; margin-top: 0.4rem;">
                                     <div>
-                                        <button class="small-button">Post Feedback</button>
+                                        <button class="small-button feedback-button" data-items='${JSON.stringify(order.items)}'>Post Feedback</button>
                                     </div>
                                     <div>Amount: &#8377;${order.amount}</div>
                                 </div>
@@ -233,5 +234,18 @@ $(document).ready(() => {
                     });
                 }
             });
+    });
+
+    $('#ordersModal').on('click', 'button.feedback-button', event => {
+        const items = JSON.parse($(event.target).attr('data-items'));
+        $('#feedbackContent').html('');
+        items.forEach(item => {
+            $('#feedbackContent').append(`
+                
+            `);
+        });
+        $('#ordersContent').html('');
+        $('#ordersModal').css('display', 'none');
+        $('#feedbackModal').css('display', 'flex');
     });
 });

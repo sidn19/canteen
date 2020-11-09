@@ -41,19 +41,25 @@ class Router {
         $resourceIndex = array_search($resource, array_column($this->resources[$type], 'url'));
 
         if ($resourceIndex !== false) {
-            if ($_GET['token'] ?? $_POST['token'] ?? false) {
-                $user = self::verifyAndDecodeToken($_GET['token'] ?? $_POST['token']);
+            try {
+                if ($_GET['token'] ?? $_POST['token'] ?? false) {
+                    $user = self::verifyAndDecodeToken($_GET['token'] ?? $_POST['token']);
+                }
+    
+                $response = $this->resources[$type][$resourceIndex]['handler'](
+                    array_merge($type === 'GET' ? $_GET : $_POST, [
+                        'user' => $user ?? null
+                    ])
+                );
+                
+                http_response_code(200);
+                header('Content-Type: application/json');
+                echo json_encode($response);
             }
-
-            $response = $this->resources[$type][$resourceIndex]['handler'](
-                array_merge($type === 'GET' ? $_GET : $_POST, [
-                    'user' => $user ?? null
-                ])
-            );
-            
-            http_response_code(200);
-            header('Content-Type: application/json');
-            echo json_encode($response);
+            catch (Exception $e) {
+                http_response_code(500);
+                die('Server Error.');
+            }
         }
         else {
             http_response_code(400);
