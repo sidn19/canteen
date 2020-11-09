@@ -215,7 +215,7 @@ a {
     animation: loading 1s infinite; 
 }
 
-#back-arrow {
+.back-arrow {
     font-weight: bold;
     font-size: 2rem;
     cursor: pointer;

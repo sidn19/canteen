@@ -21,6 +21,8 @@ gapi.load('auth2', () => {
     auth2.currentUser.listen(user => {
         if (user && user.isSignedIn()) {
             googleUser = user;
+            $('.user-name').text(user.getBasicProfile().getGivenName());
+
             fetch(`${apiUrl}/users?token=${googleUser.getAuthResponse().id_token}`)
                 .then(response => response.json())
                 .then(data => {
@@ -45,6 +47,7 @@ gapi.load('auth2', () => {
 $(document).ready(() => {
     let cart = [];
     let itemGroups = [];
+    let feedbackItems = [];
 
     fetch(`${apiUrl}/menu`)
         .then(response => response.json())
@@ -134,7 +137,11 @@ $(document).ready(() => {
     });
 
     $('.modal, .close-button').click(event => {
-        if (event.target.id === 'cartModal' || event.target.id === 'ordersModal' || event.target.id === 'feedbackModal' || $(event.target).hasClass('close-button')) {
+        if (
+            event.target.id === 'cartModal' || event.target.id === 'ordersModal' || 
+            event.target.id === 'feedbackModal' || event.target.id === 'thankYouModal' || 
+            $(event.target).hasClass('close-button')
+        ) {
             $('.blurable').css('filter', 'none');
             $('.modal').css('display', 'none');
             $('#ordersContent').html('');
@@ -193,7 +200,7 @@ $(document).ready(() => {
             });
     });
 
-    $('#ordersButton, #back-arrow').click(() => {        
+    $('#ordersButton, .back-arrow').click(() => {        
         $('.orders-loader').show();
         $('#feedbackModal').css('display', 'none');
         $('#ordersModal').css('display', 'flex');
@@ -237,15 +244,44 @@ $(document).ready(() => {
     });
 
     $('#ordersModal').on('click', 'button.feedback-button', event => {
-        const items = JSON.parse($(event.target).attr('data-items'));
+        feedbackItems = JSON.parse($(event.target).attr('data-items'));
         $('#feedbackContent').html('');
-        items.forEach(item => {
+        feedbackItems.forEach(item => {
             $('#feedbackContent').append(`
-                
+                <div style="display: flex; flex-direction: column; margin: 1rem 0rem;">
+                    <label for="${item.itemId}-review">${item.name}</label>
+                    <input type="range" id="${item.itemId}-score" min="1" max="5">
+                    <textarea style="height: 4rem;" id="${item.itemId}-review" placeholder="Enter review..."></textarea>
+                </div>
             `);
         });
         $('#ordersContent').html('');
         $('#ordersModal').css('display', 'none');
         $('#feedbackModal').css('display', 'flex');
+    });
+
+    $('#feedbackButton').click(event => {
+        event.preventDefault();
+
+        // get input
+        const reviews = [];
+        feedbackItems.forEach(item => {
+            reviews.push({
+                itemId: item.itemId,
+                score: parseInt($(`#${item.itemId}-score`).val()),
+                review: $(`#${item.itemId}-review`).val()
+            });
+        });
+
+        fetch(`${apiUrl}/feedback`, {
+            method: 'POST',
+            body: new URLSearchParams({
+                reviews: JSON.stringify(reviews),
+                token: googleUser.getAuthResponse().id_token
+            })
+        });
+
+        $('#feedbackModal').css('display', 'none');
+        $('#thankYouModal').css('display', 'flex');
     });
 });

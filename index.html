@@ -224,16 +224,29 @@
         <div class="modal" id="feedbackModal">
             <div class="card" style="width: 25rem">
                 <div style="position: relative;">
-                    <span id="back-arrow">&larr;</span>
+                    <span class="back-arrow">&larr;</span>
                     <div class="title">Give us Feedback!</div>
                     <span class="close-button" title="Close">&times;</span>
                 </div>
                 <form>
-                    <div class="feedbackContent"></div>
+                    <div id="feedbackContent"></div>
                     <div style="text-align: center;">
                         <button id="feedbackButton">Submit</button>
                     </div>
                 </form>
+            </div>
+        </div>
+        <div class="modal" id="thankYouModal">
+            <div class="card" style="width: 25rem">
+                <div style="position: relative;">
+                    <span class="back-arrow">&larr;</span>
+                    <div class="title">Thank you!</div>
+                    <span class="close-button" title="Close">&times;</span>
+                </div>
+                <p style="text-align: justify;">
+                    Hey <span class="user-name"></span>, thank you for taking the time to provide a rating. 
+                    Your opinion is valued greatly and it helps us maintain excellent standard of service to our customers.
+                </p>
             </div>
         </div>
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

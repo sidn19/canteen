@@ -270,7 +270,7 @@ $router->post('/feedback', function ($params) use ($db) {
     $userId = $PDOStatement->fetchColumn();
 
     // insert feedback
-    $reviews = json_decode($params['reviews']);
+    $reviews = json_decode($params['reviews'], true);
     $PDOStatement = $db->prepare('
         INSERT INTO ratings (userId, itemId, score, review)
             VALUES (:userId, :itemId, :score1, :review1)
