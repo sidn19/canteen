@@ -6,26 +6,6 @@ if ('serviceWorker' in navigator) {
 
 const apiUrl = '/api';
 
-let orders = [
-    {
-        id: 1,
-        items: [
-            {
-                id: 14,
-                rating: null,
-                name: 'Veg. Noodles'
-            },
-            {
-                id: 13,
-                rating: null,
-                name: 'Chi. Noodles'
-            }
-        ],
-        price: 145,
-        status: 'Delivered'
-    }
-];
-
 let balance = 0;
 
 let googleUser = null;
@@ -154,9 +134,10 @@ $(document).ready(() => {
     });
 
     $('.modal, .close-button').click(event => {
-        if (event.target.id === 'cartModal' || $(event.target).hasClass('close-button')) {
+        if (event.target.id === 'cartModal' || event.target.id === 'ordersModal' || $(event.target).hasClass('close-button')) {
             $('.blurable').css('filter', 'none');
-            $('#cartModal').css('display', 'none');
+            $('.modal').css('display', 'none');
+            $('#ordersContent').html('');
         }
     });
 
@@ -206,8 +187,51 @@ $(document).ready(() => {
                 $('.total-cost').text('0');
                 $('.total-items').text('0');
                 $('#balance').text(balance);
+                $('#viewCartButton').attr('disabled', true);
                 $('.blurable').css('filter', 'none');
                 $('#cartModal').css('display', 'none');
+            });
+    });
+
+    $('#ordersButton').click(() => {        
+        $('.orders-loader').show();
+        $('#ordersModal').css('display', 'flex');
+
+        fetch(`${apiUrl}/orders?token=${googleUser.getAuthResponse().id_token}`)
+            .then(response => response.json())
+            .then(orders => {                
+                $('.orders-loader').hide();
+                if (orders.length === 0) {
+                    $('#ordersContent').html(`
+                        <p style="text-align: justify;">
+                            No orders were found. You can begin ordering by adding items to your cart and confirming the order.
+                        </p>
+                    `);
+                }
+                else {
+                    $('#ordersContent').html('');
+                    orders.forEach(order => {
+                        const date = new Date(order.createdAt);
+                        $('#ordersContent').append(`
+                            <div style="display: flex; flex-direction: column; margin: 1.2rem 0rem;">
+                                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                    <div>${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}, ${date.getHours() % 12}:${date.getMinutes()} ${date.getHours() >= 12 ? 'PM' : 'AM'}</div>
+                                    <div><strong>${order.status}</strong></div>
+                                </div>
+                                <div style="font-size: 0.9rem; display: flex; flex-direction: row;">
+                                    <div>Items:</div>
+                                    <div style="padding-left: 0.3rem">${order.items.join(', ')}</div>
+                                </div>
+                                <div style="font-size: 0.9rem; display: flex; flex-direction: row; justify-content: space-between; margin-top: 0.4rem;">
+                                    <div>
+                                        <button class="small-button">Post Feedback</button>
+                                    </div>
+                                    <div>Amount: &#8377;${order.amount}</div>
+                                </div>
+                            </div>
+                        `);
+                    });
+                }
             });
     });
 });

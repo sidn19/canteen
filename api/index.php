@@ -86,7 +86,7 @@ $router->get('/menu', function ($params) use ($db) {
     return $itemGroups;
 });
 
-$router->get('/orders', function ($params) {
+$router->get('/orders', function ($params) use ($db) {
     // get user id
     $PDOStatement = $db->prepare('
         SELECT id
@@ -96,7 +96,33 @@ $router->get('/orders', function ($params) {
     $PDOStatement->bindValue(':email', $params['user']['email'], PDO::PARAM_STR);
     $PDOStatement->execute();
     $userId = $PDOStatement->fetchColumn();
-    
+    // get orders
+    $PDOStatement = $db->prepare('
+        SELECT o.id, o.status, ABS(t.amount) AS amount, o.createdAt
+            FROM orders o
+            INNER JOIN transactions t
+                ON o.transactionId = t.id AND o.userId = t.userId
+            WHERE o.userId = :userId
+            ORDER BY o.createdAt DESC
+    ');
+    $PDOStatement->bindValue(':userId', $userId, PDO::PARAM_INT);
+    $PDOStatement->execute();
+    $orders = $PDOStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    $PDOStatement = $db->prepare('
+        SELECT i.name
+            FROM orderitems oi
+            INNER JOIN items i
+                ON oi.itemId = i.id
+            WHERE oi.orderId = :orderId
+    ');
+    foreach ($orders as &$order) {
+        $PDOStatement->bindValue(':orderId', $order['id'], PDO::PARAM_INT);
+        $PDOStatement->execute();
+        $order['items'] = $PDOStatement->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    return $orders;
 });
 
 $router->post('/orders', function ($params) use ($db) {

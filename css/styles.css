@@ -109,6 +109,12 @@ button:disabled {
     cursor: default;
 }
 
+button.small-button {
+    padding: 0.15rem 0.3rem;
+    font-size: 0.8rem;
+    margin: 0rem;
+}
+
 button.large-button {
     padding: 0.6rem 1rem;
     font-size: 1.2rem;
