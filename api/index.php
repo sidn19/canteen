@@ -1,32 +1,22 @@
 <?php
 
-echo '1';
-
 require_once __DIR__.'/classes/router.class.php';
 require_once __DIR__.'/classes/database.class.php';
 
 // initialize database connection
 $db = null;
 
-echo '2';
-
 try {
     $db = new Database();
-    echo '3';
 }
 catch(PDOException $e) {
-    echo '4';
     http_response_code(500);
     die(json_encode($e));
     die('Failed to connect to the database');
 }
 
-echo '5';
-
 // declare routes
 $router = new Router();
-
-echo '6';
 
 $router->get('/', function($params) {
     return [
@@ -311,5 +301,3 @@ $router->post('/feedback', function ($params) use ($db) {
 
 // run resource
 $router->run($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
-
-echo '7';
