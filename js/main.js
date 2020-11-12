@@ -4,7 +4,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-const apiUrl = '/api';
+const apiUrl = location.hostname === 'arctlk.github.io' ? 'http://ec2-54-235-55-54.compute-1.amazonaws.com/api/' : '/api';
 
 let balance = 0;
 
