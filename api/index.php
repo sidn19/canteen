@@ -17,6 +17,7 @@ try {
 catch(PDOException $e) {
     echo '4';
     http_response_code(500);
+    die(json_encode($e));
     die('Failed to connect to the database');
 }
 
