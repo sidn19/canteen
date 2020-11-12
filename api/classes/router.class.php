@@ -1,5 +1,5 @@
 <?php
-echo '1.3';
+
 class Router {
     private array $resources = [
         'GET' => [],
