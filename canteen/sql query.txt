@@ -1,0 +1,1 @@
+SELECT orders.id, users.name, users.email , orders.status from orders INNER JOIN users ON users.id=orders.userId
