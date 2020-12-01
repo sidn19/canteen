@@ -5,11 +5,11 @@ header('Content-Type: application/json');
 require_once 'connection.php';
 
 $query = '
-  SELECT i.name, oi.quantity
+  SELECT i.name, SUM(oi.quantity) AS quantity
     FROM items i
     INNER JOIN orderitems oi
       ON i.id = oi.itemId
-    GROUP BY i.name, oi.quantity
+    GROUP BY i.name
 ';
 
 //execute query
