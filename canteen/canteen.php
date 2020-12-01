@@ -102,7 +102,7 @@ if(!isset($_SESSION['user'])){
                               echo '<div><h3><b>';
                                         
                                         for ($i = 0; $i < count($author['items']); ++$i) {
-                                            echo $author['items'][$i]['name'].' ('.$author['items'][$i]['quantity'].')';
+                                            echo $author['items'][$i]['food'].' ('.$author['items'][$i]['quantity'].')';
                                             if ($i !== count($author['items']) - 1) {
                                                 echo ', ';
                                             }
@@ -134,7 +134,7 @@ if(!isset($_SESSION['user'])){
                                         echo '<div><h3><b>';
                                         
                                         for ($i = 0; $i < count($author['items']); ++$i) {
-                                            echo $author['items'][$i]['name'].' ('.$author['items'][$i]['quantity'].')';
+                                            echo $author['items'][$i]['food'].' ('.$author['items'][$i]['quantity'].')';
                                             if ($i !== count($author['items']) - 1) {
                                                 echo ', ';
                                             }
