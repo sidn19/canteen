@@ -7,7 +7,8 @@ require_once('connection.php');
   $sql1 = "SELECT
   users.name AS person,
   users.email AS UID,
-  orders.id AS ID
+  orders.id AS ID,
+  users.email
 from orders
 INNER JOIN users
     ON users.id=orders.userId

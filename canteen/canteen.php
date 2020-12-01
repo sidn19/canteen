@@ -103,8 +103,9 @@ if(!isset($_SESSION['user'])){
                                 <h3><b>'.join(', ', array_column($author['items'], 'food')).'</b></h3>
                                 <p name="'.$author['person'].'"> '.$author['person'].'</p>
                               </div>';
-                              echo '<div style="display: flex; flex-direction: column; justify-content: space-between"><input type="button" name="'.$author['ID'].'" value="Accept" class="accept">';
-                              echo '<input type="button" name="'.$author['ID'].'" value="Decline" class="decline"></div>';
+                              echo '<div style="display: flex; flex-direction: column; justify-content: space-between">
+                                <input type="button" data-email="'.$author['email'].'" data-name="'.$author['person'].'" name="'.$author['ID'].'" value="Accept" class="accept">';
+                              echo '<input type="button" data-email="'.$author['email'].'" data-name="'.$author['person'].'" name="'.$author['ID'].'" value="Decline" class="decline"></div>';
                               echo " </div>";
                               }
                             ?>
@@ -234,12 +235,14 @@ var em;
 //for accept button press
 $('.accept').click(function (e) {
     em = $(this).attr("name");
+    let em2 = $(this).attr("data-email");
+    let name = $(this).attr('data-name');
 
     console.log(em);
     $.ajax({
         url: 'accept.php',
         type: 'POST',
-        data: {"id":em},
+        data: {"id":em, "email": em2, "name": name},
         success: function(data) {
               location.reload(true);
         }
@@ -250,12 +253,14 @@ $('.accept').click(function (e) {
 //for decline button press
 $('.decline').click(function (e) {
     em = $(this).attr("name");
+    let em2 = $(this).attr("data-email");
+    let name = $(this).attr('data-name');
     //alert(em);
     console.log(em);
     $.ajax({
         url: 'decline.php',
         type: 'POST',
-        data: {"id":em},
+        data: {"id":em, "email": em2, "name": name},
         success: function(data) {
           location.reload(true);
         }
