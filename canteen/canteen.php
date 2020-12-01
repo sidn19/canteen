@@ -97,11 +97,11 @@ if(!isset($_SESSION['user'])){
                                 // session_start();
                               require_once 'orders.php';
                               foreach ($authors as $author) {
-                              echo '<div class="innercard cl" style="display: flex">';
+                              echo '<div class="innercard cl" style="display: flex; justify-content: space-between">';
                               echo "<div><img src='/api".$author['items'][0]['image']."' width='100px' height='100px' style='border-radius: 50%; padding-right: 20px;'></div>";
                               echo '<div>
-                                <h3 style="display: inline-block;"><b>'.join(', ', array_column($author['items'], 'food')).'</b></h3>
-                                <p name="'.$author['person'].'" style="display: inline-block;"> '.$author['person'].'</p>
+                                <h3><b>'.join(', ', array_column($author['items'], 'food')).'</b></h3>
+                                <p name="'.$author['person'].'"> '.$author['person'].'</p>
                               </div>';
                               echo '<div style="display: flex; flex-direction: column; justify-content: space-between"><input type="button" name="'.$author['ID'].'" value="Accept" class="accept">';
                               echo '<input type="button" name="'.$author['ID'].'" value="Decline" class="decline"></div>';
@@ -122,11 +122,11 @@ if(!isset($_SESSION['user'])){
                             // // $authors = loadAuthors();
                             // $queues=callout();
                         			foreach ($queues as $author) {
-                                        echo '<div class="innercard cr" style="display: flex">';
+                                        echo '<div class="innercard cr" style="display: flex; justify-content: space-between">';
                                         echo "<div><img src='/api".$author['items'][0]['image']."' width='100px' height='100px' style='border-radius: 50%; padding-right: 20px;'></div>";
                                         echo '<div>
-                                            <h3 style="display: inline-block;"><b>'.join(', ', array_column($author['items'], 'food')).'</b></h3>
-                                            <p name="'.$author['person'].'" style="display: inline-block;"> '.$author['person'].'</p>
+                                            <h3><b>'.join(', ', array_column($author['items'], 'food')).'</b></h3>
+                                            <p name="'.$author['person'].'"> '.$author['person'].'</p>
                                         </div>';
                                         echo '<div style="display: flex; flex-direction: column; justify-content: flex-end"><input type="button" data-order="'.$author['ID'].'" data-name="'.$author['person'].'" name="'.$author['EMAIL'].'" value="Call Out" style="float: right;" class="callout button"></div>';
                                         echo " </div>";
