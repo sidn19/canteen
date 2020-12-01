@@ -20,7 +20,8 @@ INNER JOIN users
 
   $sql2 = "SELECT
   items.name AS food,
-  items.image
+  items.image,
+  orderitems.quantity
 from items
 INNER JOIN orderitems
 	ON orderitems.itemId = items.id

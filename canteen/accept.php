@@ -34,7 +34,7 @@ $mail->AddAddress($_POST['email'], $_POST['name']);
 $mail->SetFrom("testcollegecanteen@gmail.com", "College Canteen");
 $mail->AddReplyTo("testcollegecanteen@gmail.com", "College Canteen");
 $mail->Subject = "Your order is accepted!";
-$content = "<h1>Thank you for ordering!</h1><p>Food is on the way!.</p>";
+$content = "<h1>Thank you for ordering!</h1><p>Food is on the way!</p>";
 
 $mail->MsgHTML($content); 
 if(!$mail->Send()) {

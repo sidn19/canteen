@@ -99,10 +99,16 @@ if(!isset($_SESSION['user'])){
                               foreach ($authors as $author) {
                               echo '<div class="innercard cl" style="display: flex; justify-content: space-between">';
                               echo "<div><img src='/api".$author['items'][0]['image']."' width='100px' height='100px' style='border-radius: 50%; padding-right: 20px;'></div>";
-                              echo '<div>
-                                <h3><b>'.join(', ', array_column($author['items'], 'food')).'</b></h3>
-                                <p name="'.$author['person'].'"> '.$author['person'].'</p>
-                              </div>';
+                              echo '<div><h3><b>';
+                                        
+                                        for ($i = 0; $i < count($author['items']); ++$i) {
+                                            echo $author['items'][$i]['name'].' ('.$author['items'][$i]['quantity'].')';
+                                            if ($i !== count($author['items']) - 1) {
+                                                echo ', ';
+                                            }
+                                        }
+
+                              echo '</b></h3><p name="'.$author['person'].'"> '.$author['person'].'</p></div>';
                               echo '<div style="display: flex; flex-direction: column; justify-content: space-between">
                                 <input type="button" data-email="'.$author['email'].'" data-name="'.$author['person'].'" name="'.$author['ID'].'" value="Accept" class="accept">';
                               echo '<input type="button" data-email="'.$author['email'].'" data-name="'.$author['person'].'" name="'.$author['ID'].'" value="Decline" class="decline"></div>';
@@ -125,10 +131,16 @@ if(!isset($_SESSION['user'])){
                         			foreach ($queues as $author) {
                                         echo '<div class="innercard cr" style="display: flex; justify-content: space-between">';
                                         echo "<div><img src='/api".$author['items'][0]['image']."' width='100px' height='100px' style='border-radius: 50%; padding-right: 20px;'></div>";
-                                        echo '<div>
-                                            <h3><b>'.join(', ', array_column($author['items'], 'food')).'</b></h3>
-                                            <p name="'.$author['person'].'"> '.$author['person'].'</p>
-                                        </div>';
+                                        echo '<div><h3><b>';
+                                        
+                                        for ($i = 0; $i < count($author['items']); ++$i) {
+                                            echo $author['items'][$i]['name'].' ('.$author['items'][$i]['quantity'].')';
+                                            if ($i !== count($author['items']) - 1) {
+                                                echo ', ';
+                                            }
+                                        }
+
+                                        echo '</b></h3><p name="'.$author['person'].'"> '.$author['person'].'</p></div>';
                                         echo '<div style="display: flex; flex-direction: column; justify-content: flex-end"><input type="button" data-order="'.$author['ID'].'" data-name="'.$author['person'].'" name="'.$author['EMAIL'].'" value="Call Out" style="float: right;" class="callout button"></div>';
                                         echo " </div>";
                                     }
