@@ -6,7 +6,7 @@ require_once 'connection.php';
 
 //query to get data from the table
 $query = '
-  SELECT createdAt, SUM(amount) AS amount
+  SELECT createdAt AS `date`, SUM(amount) AS amount
     FROM (
       SELECT DATE(createdAt) AS createdAt, amount
         FROM transactions
