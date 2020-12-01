@@ -9,7 +9,7 @@ $query = '
     FROM items i
     INNER JOIN orderitems oi
       ON i.id = oi.itemId
-    GROUP BY i.name
+    GROUP BY i.name, oi.quantity
 ';
 
 //execute query
