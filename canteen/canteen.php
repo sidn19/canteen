@@ -128,7 +128,7 @@ if(!isset($_SESSION['user'])){
                                             <h3 style="display: inline-block;"><b>'.join(', ', array_column($author['items'], 'food')).'</b></h3>
                                             <p name="'.$author['person'].'" style="display: inline-block;"> '.$author['person'].'</p>
                                         </div>';
-                                        echo '<div style="display: flex; flex-direction: column; justify-content: flex-end"><input type="button" data-name="'.$author['person'].'" name="'.$author['EMAIL'].'" value="Call Out" style="float: right;" class="callout button"></div>';
+                                        echo '<div style="display: flex; flex-direction: column; justify-content: flex-end"><input type="button" data-order="'.$author['ID'].'" data-name="'.$author['person'].'" name="'.$author['EMAIL'].'" value="Call Out" style="float: right;" class="callout button"></div>';
                                         echo " </div>";
                                     }
                           ?>
@@ -145,7 +145,7 @@ if(!isset($_SESSION['user'])){
                                <label for="adno" class="lbl">Email Id:</label>
                                <input type="text" id="adno" name="email" placeholder="Enter Email Id" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"><br><br>
                                <label for="amt" class="lbl">Amount</label>
-                               <input type="text" id="amt" name="amount" placeholder="Enter Money to Deposite" required pattern="[0-9]+"><br><br>
+                               <input type="text" id="amt" name="amount" placeholder="Enter Money to Deposit" required pattern="[0-9]+"><br><br>
                                <button class="button" style="vertical-align:middle"><span>Submit </span></button>
                            </fieldset>
                           </form>
@@ -250,7 +250,7 @@ $('.accept').click(function (e) {
 //for decline button press
 $('.decline').click(function (e) {
     em = $(this).attr("name");
-    alert(em);
+    //alert(em);
     console.log(em);
     $.ajax({
         url: 'decline.php',
@@ -267,15 +267,15 @@ $('.decline').click(function (e) {
 $('.callout').click(function (e) {
     let em = $(this).attr("name");
     let name = $(this).attr('data-name');
-    
+    let orderId = $(this).attr('data-order');
 
 
     $.ajax({
         url: 'callout.php',
         type: 'POST',
-        data: {"email":em, "name": name},
+        data: {"email":em, "name": name, "orderId": orderId},
         success: function(data) {
-            alert('Email sent successfully!');
+            location.reload(true);
         }
     });
 

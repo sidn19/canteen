@@ -5,7 +5,7 @@
           $id=$_POST['id'];
 
           //for adding status = Started;
-          $sql = "UPDATE orders SET status='Started' WHERE id=?";
+          $sql = "UPDATE orders SET status='Started', startedAt = CURRENT_TIMESTAMP WHERE id=?";
           $stmt= $pdo->prepare($sql);
           $stmt->EXECUTE([$id]);
 

@@ -30,5 +30,11 @@ $mail->MsgHTML($content);
 if(!$mail->Send()) {
     echo 'Error sending email';
 } else {
+    require_once 'connection.php';
+
+    $stmt = $pdo->prepare('UPDATE orders SET `status` = "Completed", completedAt = CURRENT_TIMESTAMP WHERE id = ?');
+    $stmt->execute([$_POST['orderId']]);
+
+    
     echo 'Email sent successfully!';
 }
