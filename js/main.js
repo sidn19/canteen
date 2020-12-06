@@ -27,7 +27,7 @@ gapi.load('auth2', () => {
                 .then(response => response.json())
                 .then(data => {
                     balance = data.balance;
-                    const totalCost = parseInt($('.total-cost').text().slice(0, $('.total-cost').text().length / 2)) - cart[itemIndex].price;
+                    const totalCost = parseInt($('.total-cost').text().slice(0, $('.total-cost').text().length / 2));
                     
                     $('#confirmOrderButton').attr('disabled', totalCost > balance);
 
