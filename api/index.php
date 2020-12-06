@@ -107,7 +107,7 @@ $router->get('/orders', function ($params) use ($db) {
             FROM orders o
             INNER JOIN transactions t
                 ON o.transactionId = t.id AND o.userId = t.userId
-            WHERE o.userId = :userId
+            WHERE o.userId = :userId AND o.createdAt >= DATE(NOW()) - INTERVAL 7 DAY
             ORDER BY o.createdAt DESC
     ');
     $PDOStatement->bindValue(':userId', $userId, PDO::PARAM_INT);

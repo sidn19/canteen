@@ -33,8 +33,31 @@ $mail->IsHTML(true);
 $mail->AddAddress($_POST['email'], $_POST['name']);
 $mail->SetFrom("testcollegecanteen@gmail.com", "College Canteen");
 $mail->AddReplyTo("testcollegecanteen@gmail.com", "College Canteen");
+
+// get user id
+$stmt = $pdo->prepare('
+SELECT id FROM users
+  WHERE email = ?
+');
+$stmt->execute([$_POST['email']]);
+$userId = $stmt->fetchColumn();
+
+// get balance
+$stmt = $pdo->prepare('
+SELECT SUM(amount)
+  FROM transactions
+  WHERE userId = ?
+');
+$stmt->execute([$userId]);
+$balance = $stmt->fetchColumn();
+
 $mail->Subject = "Your order is accepted!";
 $content = "<h1>Thank you for ordering!</h1><p>Food is on the way!</p>";
+
+if ($balance <= 50) {
+  $mail->Subject .= ' (Low Balance)';
+  $content .= '<p>Note: Your balance is now '.$balance.'. To recharge your balance please deposit cash near the canteen counter.</p>';
+}
 
 $mail->MsgHTML($content); 
 if(!$mail->Send()) {

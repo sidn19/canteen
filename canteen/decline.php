@@ -9,6 +9,29 @@
           $stmt= $pdo->prepare($sql);
           $stmt->EXECUTE([$id]);
 
+          // get order total
+          $stmt = $pdo->prepare('
+            SELECT SUM(paidAmount)
+              FROM orderitems
+              WHERE orderId = ?
+          ');
+          $stmt->execute([$id]);
+          $amount = $stmt->fetchColumn();
+
+          // get user id
+          $stmt = $pdo->prepare('
+            SELECT id FROM users
+              WHERE email = ?
+          ');
+          $stmt->execute([$_POST['email']]);
+          $userId = $stmt->fetchColumn();
+
+          $stmt = $pdo->prepare('
+              INSERT INTO transactions (userId, amount)
+                  VALUES (?, ?)
+          ');
+          $stmt->execute([$userId, $amount]);
+
 
             require_once __DIR__.'/vendor/phpmailer/phpmailer/src/Exception.php';
             require_once __DIR__.'/vendor/phpmailer/phpmailer/src/PHPMailer.php';
