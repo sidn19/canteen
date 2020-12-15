@@ -8,15 +8,18 @@
         <meta name="theme-color" content="#6f4e37">
     </head>
     <body>
-        <div class="menu blurable">
+        <div class="menu blurable" style="align-items: center;">
             <div>
                 <button id="ordersButton" class="logged-in-content" style="display: none;">Your Orders</button>
             </div>
-            <div style="margin-left: auto;">
-                <button id="loginButton2" class="logged-out-content">Log In</button>
+            <div style="margin-left: auto;" class="logged-out-content">
+                <button id="loginButton2">Log In</button>
             </div>
             <div>
                 <button id="logoutButton" class="logged-in-content" style="display: none;">Log Out</button>
+            </div>            
+            <div class="logged-in-content" style="display: none;">
+                Balance: &#8377;<span class="balance">0</span>
             </div>
         </div>
         <h1 class="blurable">Canteen Menu</h1>
@@ -152,7 +155,7 @@
                     <button class="large-button logged-in-content" id="confirmOrderButton" style="display: none;">Confirm Order</button>
                 </div>
                 <div style="text-align: center; margin: 0.3rem auto; display: none;" class="logged-in-content">
-                    You currently have &#8377;<span id="balance">0</span> in your account
+                    You currently have &#8377;<span class="balance">0</span> in your account
                 </div>
             </div>
         </div>

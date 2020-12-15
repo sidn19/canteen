@@ -9,5 +9,6 @@ class Database extends PDO {
         ]);
 
         $this->exec('SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci');
+        $this->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
 }

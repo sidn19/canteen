@@ -27,7 +27,11 @@ gapi.load('auth2', () => {
                 .then(response => response.json())
                 .then(data => {
                     balance = data.balance;
-                    $('#balance').text(balance);
+                    const totalCost = parseInt($('.total-cost').text().slice(0, $('.total-cost').text().length / 2));
+                    
+                    $('#confirmOrderButton').attr('disabled', totalCost > balance);
+
+                    $('.balance').text(balance);
                     $('.logged-in-content').show();
                     $('.logged-out-content').hide();
                 })
@@ -193,7 +197,7 @@ $(document).ready(() => {
                 $('#cartItems').children().remove();
                 $('.total-cost').text('0');
                 $('.total-items').text('0');
-                $('#balance').text(balance);
+                $('.balance').text(balance);
                 $('#viewCartButton').attr('disabled', true);
                 $('.blurable').css('filter', 'none');
                 $('#cartModal').css('display', 'none');
