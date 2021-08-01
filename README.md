@@ -3,6 +3,9 @@ Students need to deposit an amount in the college canteen which will be updated 
 This project has 3 views namely Admin view, Student view and Metrics view.
 
 
+**Report Link: https://drive.google.com/file/d/1wWz4tiB6siyYE0HnUM7LQPOKp6J68k_n/view?usp=sharing**
+
+
 
 ***Introduction***
 
